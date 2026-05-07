@@ -1,6 +1,7 @@
 using System;
 using MoneyManager.Models;
 using Microsoft.EntityFrameworkCore;
+using MoneyManager.Data.Models;
 
 namespace MoneyManager.Data
 {
@@ -17,5 +18,6 @@ namespace MoneyManager.Data
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
     }
 }
