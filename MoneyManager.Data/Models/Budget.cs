@@ -11,7 +11,9 @@ public class Budget
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int BudgetUID { get; set; }
     public int CategoryId { get; set; }
+    public Category Category { get; set; }
     public int UserId { get; set; }
+    public User User { get; set; }
     [Precision(18, 2)]
     [Required]
     public decimal SpendLimit { get; set; }
