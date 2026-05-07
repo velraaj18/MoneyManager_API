@@ -1,7 +1,6 @@
 using System;
 using MoneyManager.Models;
 using Microsoft.EntityFrameworkCore;
-using MoneyManager.Data.Models;
 
 namespace MoneyManager.Data
 {

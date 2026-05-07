@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace MoneyManager.Data.Models;
+namespace MoneyManager.Models;
 
 public class Budget
 {
