@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MoneyManager.BusinessLogic.Services;
 using MoneyManager.Common.DTOs.Budgets;
 using MoneyManager.DTO;
+using MoneyManager.Models;
 
 namespace MoneyManager.Application.Controllers
 {
@@ -15,10 +16,18 @@ namespace MoneyManager.Application.Controllers
         {
             _service = service;
         }
+
         [HttpGet]
         public Task<APIResponse<List<BudgetResponse>>> GetAllBudget()
         {
             var response = _service.GetAllBudget();
+            return response;
+        }
+
+        [HttpPost("AddBudget")]
+        public Task<APIResponse<Budget>> AddBudget(BudgetRequest request)
+        {
+            var response = _service.CreateBudget(request);
             return response;
         }
     }
