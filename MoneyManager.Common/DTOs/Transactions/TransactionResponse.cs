@@ -8,4 +8,5 @@ public class TransactionResponse
     public string Category { get; set; }
     public int AccountId {get; set;}
     public string Account { get; set; }
+    public string TransactionType {get; set;}
 }

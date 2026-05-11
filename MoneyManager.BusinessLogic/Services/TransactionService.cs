@@ -15,9 +15,9 @@ namespace MoneyManager.Services
             _db = db;
         }
 
-        public async Task<APIResponse<List<TransactionResponse>>> GetAllTransactions()
+        public async Task<APIResponse<List<TransactionResponse>>> GetAllTransactions(int userId)
         {
-            var result = await _db.Transactions.Include(t => t.Category).Include(t => t.Account).Select(t => new TransactionResponse
+            var result = await _db.Transactions.Where(x => x.UserId == userId).Select(t => new TransactionResponse
             {
                 TransactionUID = t.TransactionUID,
                 Date = t.Date,
@@ -26,7 +26,8 @@ namespace MoneyManager.Services
                 CategoryId = t.CategoryUID,
                 Category = t.Category.CategoryName,
                 AccountId = t.AccountUID,
-                Account = t.Account.AccountName
+                Account = t.Account.AccountName,
+                TransactionType = t.Category.TransactionType.ToString()
             }).ToListAsync();
 
             if (result.Count == 0)

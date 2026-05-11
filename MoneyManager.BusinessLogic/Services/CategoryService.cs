@@ -34,6 +34,7 @@ namespace MoneyManager.Services
             var category = new Category()
             {
                 CategoryName = req.CategoryName,
+                TransactionType = req.TransactionType,
                 Description = req.Description
             };
 
@@ -60,6 +61,7 @@ namespace MoneyManager.Services
 
             category.CategoryName = req.CategoryName;
             category.Description = req.Description;
+            category.TransactionType = req.TransactionType;
 
             await _db.SaveChangesAsync();
 

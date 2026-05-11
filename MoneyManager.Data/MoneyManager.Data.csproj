@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MoneyManager.Common\MoneyManager.Common.csproj" />
+  </ItemGroup>
+
 </Project>
