@@ -15,12 +15,12 @@ public class BudgetService
         _db = db;
     }
 
-    public async Task<APIResponse<List<BudgetResponse>>> GetAllBudget()
+    public async Task<APIResponse<List<BudgetResponse>>> GetAllBudget(int userId)
     {
-        var response = await _db.Budgets.Include(x=> x.Category).Include(x=> x.User).ToListAsync();
+        var response = await _db.Budgets.Include(x=> x.Category).Where(x => x.UserId == userId).ToListAsync();
         if (response.Count == 0)
         {
-            return new APIResponse<List<BudgetResponse>>{ Data = null, Message = "No Budgets Found", StatusCode = 200};
+            return new APIResponse<List<BudgetResponse>>{ Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200};
         }
         var budgetResponses = new List<BudgetResponse>();
 
@@ -41,11 +41,47 @@ public class BudgetService
         return new APIResponse<List<BudgetResponse>>{Data = budgetResponses, Message = "Budgets fetched successfully", StatusCode = 200};
     }
 
+    public async Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int userId, int? categoryId, int? month, int? year)
+    {
+        var query = _db.Budgets.Where(x => x.UserId == userId);
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(x=> x.CategoryId == categoryId);
+        }
+        if (month.HasValue)
+        {
+            query = query.Where(x=> x.Month == month);
+        }
+        if (year.HasValue)
+        {
+            query = query.Where(x=> x.Year == year);
+        }
+
+        var response = await query.Select(item => new BudgetResponse
+        {
+            CategoryName = item.Category.CategoryName,
+            SpendLimit = item.SpendLimit,
+            AmountRemaining = 0,
+            Year = item.Year,
+            Month = item.Month,
+            DateCreated = item.DateCreated,
+            ModifiedDate = item.ModifiedDate
+        }).ToListAsync();
+        
+        if (response.Count == 0)
+        {
+            return new APIResponse<List<BudgetResponse>>{ Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200};
+        }
+
+        return new APIResponse<List<BudgetResponse>>{Data = response, Message = "Budgets fetched successfully", StatusCode = 200};
+    }
+
     public async Task<APIResponse<Budget>> CreateBudget(BudgetRequest request)
     {
         if(request == null)
         {
-            return new APIResponse<Budget>{Data = null, Message = "Request Cannot be Empty", StatusCode = 400};
+            return new APIResponse<Budget>{Data = new Budget(), Message = "Request Cannot be Empty", StatusCode = 400};
         }
 
         var duplicateBudget = await _db.Budgets.AnyAsync(x =>x.UserId == request.UserId &&x.CategoryId == request.CategoryId &&x.Month == request.Month && x.Year == request.Year);
@@ -67,5 +103,29 @@ public class BudgetService
         await _db.SaveChangesAsync();
 
         return new APIResponse<Budget>{Data = budget, Message = "Budget Created Successfully", StatusCode = 201};
+    }
+
+    public async Task<APIResponse<Budget>> UpdateBudget(BudgetRequest request)
+    {
+        if(request == null || request.BudgetId == null || request.BudgetId == 0)
+        {
+            return new APIResponse<Budget>{Data = new Budget(), Message = "Request/Budget Id Cannot be Empty", StatusCode = 400};
+        }
+
+        var existingBudget = await _db.Budgets.Where(x=> x.BudgetUID == request.BudgetId).FirstOrDefaultAsync();
+
+        if(existingBudget == null)
+        {
+            return new APIResponse<Budget>{Data = new Budget(), Message = "Budget not found", StatusCode = 400};
+        }
+
+        existingBudget.CategoryId = request.CategoryId;
+        existingBudget.SpendLimit = request.SpendLimit;
+        existingBudget.Month = request.Month;
+        existingBudget.Year = request.Year;
+        existingBudget.ModifiedDate = DateTime.UtcNow; 
+        await _db.SaveChangesAsync();
+
+         return new APIResponse<Budget>{Data = existingBudget, Message = "Budget updated successfully", StatusCode = 200};
     }
 }

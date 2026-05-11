@@ -18,9 +18,16 @@ namespace MoneyManager.Application.Controllers
         }
 
         [HttpGet]
-        public Task<APIResponse<List<BudgetResponse>>> GetAllBudget()
+        public Task<APIResponse<List<BudgetResponse>>> GetAllBudget(int userId)
         {
-            var response = _service.GetAllBudget();
+            var response = _service.GetAllBudget(userId);
+            return response;
+        }
+
+        [HttpGet]
+        public Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int userId, int? categoryId, int? month, int? year)
+        {
+            var response = _service.GetBudgetByCategory(userId: userId, categoryId: categoryId, month: month, year: year);
             return response;
         }
 
@@ -28,6 +35,13 @@ namespace MoneyManager.Application.Controllers
         public Task<APIResponse<Budget>> AddBudget(BudgetRequest request)
         {
             var response = _service.CreateBudget(request);
+            return response;
+        }
+
+        [HttpPut("UpdateBudget")]
+        public Task<APIResponse<Budget>> Update(BudgetRequest request)
+        {
+            var response = _service.UpdateBudget(request);
             return response;
         }
     }
