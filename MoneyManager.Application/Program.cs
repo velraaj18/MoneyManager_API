@@ -25,6 +25,7 @@ builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<BudgetService>();
+builder.Services.AddScoped<DashboardService>();
 
 // Built in password hasher
 builder.Services.AddScoped<PasswordHasher<User>>();

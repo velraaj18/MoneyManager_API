@@ -19,9 +19,9 @@ namespace MoneyManager.Controllers
         }
 
         [HttpGet("GetAllTransactions")]
-        public Task<APIResponse<List<TransactionResponse>>> GetAll()
+        public Task<APIResponse<List<TransactionResponse>>> GetAll(int userId)
         {
-            var response = _service.GetAllTransactions();
+            var response = _service.GetAllTransactions(userId);
             return response;
         }
 
