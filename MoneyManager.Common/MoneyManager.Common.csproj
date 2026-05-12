@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Budgets\" />
+    <Folder Include="DTOs\Dashboard\" />
     <Folder Include="Enums\" />
   </ItemGroup>
 

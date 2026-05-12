@@ -18,13 +18,13 @@ public class BudgetService
 
     public async Task<APIResponse<List<BudgetResponse>>> GetAllBudget(int userId)
     {
-        var response = await _db.Budgets.Include(x=> x.Category).Where(x => x.UserId == userId).ToListAsync();
+        var response = await _db.Budgets.Include(x => x.Category).Where(x => x.UserId == userId).ToListAsync();
         if (response.Count == 0)
         {
-            return new APIResponse<List<BudgetResponse>>{ Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200};
+            return new APIResponse<List<BudgetResponse>> { Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200 };
         }
         var budgetResponses = new List<BudgetResponse>();
-        var transactions = await _db.Transactions.Where(x =>x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).ToListAsync();
+        var transactions = await _db.Transactions.Where(x => x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).ToListAsync();
 
         foreach (var item in response)
         {
@@ -47,7 +47,7 @@ public class BudgetService
             });
         }
 
-        return new APIResponse<List<BudgetResponse>>{Data = budgetResponses, Message = "Budgets fetched successfully", StatusCode = 200};
+        return new APIResponse<List<BudgetResponse>> { Data = budgetResponses, Message = "Budgets fetched successfully", StatusCode = 200 };
     }
 
     public async Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int userId, int? categoryId, int? month, int? year)
@@ -56,23 +56,23 @@ public class BudgetService
 
         if (categoryId.HasValue)
         {
-            query = query.Where(x=> x.CategoryId == categoryId);
+            query = query.Where(x => x.CategoryId == categoryId);
         }
         if (month.HasValue)
         {
-            query = query.Where(x=> x.Month == month);
+            query = query.Where(x => x.Month == month);
         }
         if (year.HasValue)
         {
-            query = query.Where(x=> x.Year == year);
+            query = query.Where(x => x.Year == year);
         }
 
         var budgets = await query.Include(x => x.Category).ToListAsync();
-        var transactions = await _db.Transactions.Where(x =>x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).ToListAsync();
+        var transactions = await _db.Transactions.Where(x => x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).ToListAsync();
 
         var response = new List<BudgetResponse>();
 
-        foreach(var item in budgets)
+        foreach (var item in budgets)
         {
             var totalSpent = transactions
                 .Where(x =>
@@ -92,26 +92,26 @@ public class BudgetService
                 ModifiedDate = item.ModifiedDate
             });
         }
-        
+
         if (response.Count == 0)
         {
-            return new APIResponse<List<BudgetResponse>>{ Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200};
+            return new APIResponse<List<BudgetResponse>> { Data = new List<BudgetResponse>(), Message = "No Budgets Found", StatusCode = 200 };
         }
 
-        return new APIResponse<List<BudgetResponse>>{Data = response, Message = "Budgets fetched successfully", StatusCode = 200};
+        return new APIResponse<List<BudgetResponse>> { Data = response, Message = "Budgets fetched successfully", StatusCode = 200 };
     }
 
     public async Task<APIResponse<Budget>> CreateBudget(BudgetRequest request)
     {
-        if(request == null)
+        if (request == null)
         {
-            return new APIResponse<Budget>{Data = new Budget(), Message = "Request Cannot be Empty", StatusCode = 400};
+            return new APIResponse<Budget> { Data = new Budget(), Message = "Request Cannot be Empty", StatusCode = 400 };
         }
 
-        var duplicateBudget = await _db.Budgets.AnyAsync(x =>x.UserId == request.UserId &&x.CategoryId == request.CategoryId &&x.Month == request.Month && x.Year == request.Year);
+        var duplicateBudget = await _db.Budgets.AnyAsync(x => x.UserId == request.UserId && x.CategoryId == request.CategoryId && x.Month == request.Month && x.Year == request.Year);
 
-        if(duplicateBudget)
-            return new APIResponse<Budget>{Data = null, Message = "Budget is already added for this category and month and year", StatusCode = 409};
+        if (duplicateBudget)
+            return new APIResponse<Budget> { Data = null, Message = "Budget is already added for this category and month and year", StatusCode = 409 };
 
         var budget = new Budget()
         {
@@ -126,30 +126,30 @@ public class BudgetService
         _db.Budgets.Add(budget);
         await _db.SaveChangesAsync();
 
-        return new APIResponse<Budget>{Data = budget, Message = "Budget Created Successfully", StatusCode = 201};
+        return new APIResponse<Budget> { Data = budget, Message = "Budget Created Successfully", StatusCode = 201 };
     }
 
     public async Task<APIResponse<Budget>> UpdateBudget(BudgetRequest request)
     {
-        if(request == null || request.BudgetId == null || request.BudgetId == 0)
+        if (request == null || request.BudgetId == null || request.BudgetId == 0)
         {
-            return new APIResponse<Budget>{Data = new Budget(), Message = "Request/Budget Id Cannot be Empty", StatusCode = 400};
+            return new APIResponse<Budget> { Data = new Budget(), Message = "Request/Budget Id Cannot be Empty", StatusCode = 400 };
         }
 
-        var existingBudget = await _db.Budgets.Where(x=> x.BudgetUID == request.BudgetId).FirstOrDefaultAsync();
+        var existingBudget = await _db.Budgets.Where(x => x.BudgetUID == request.BudgetId).FirstOrDefaultAsync();
 
-        if(existingBudget == null)
+        if (existingBudget == null)
         {
-            return new APIResponse<Budget>{Data = new Budget(), Message = "Budget not found", StatusCode = 400};
+            return new APIResponse<Budget> { Data = new Budget(), Message = "Budget not found", StatusCode = 400 };
         }
 
         existingBudget.CategoryId = request.CategoryId;
         existingBudget.SpendLimit = request.SpendLimit;
         existingBudget.Month = request.Month;
         existingBudget.Year = request.Year;
-        existingBudget.ModifiedDate = DateTime.UtcNow; 
+        existingBudget.ModifiedDate = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
-         return new APIResponse<Budget>{Data = existingBudget, Message = "Budget updated successfully", StatusCode = 200};
+        return new APIResponse<Budget> { Data = existingBudget, Message = "Budget updated successfully", StatusCode = 200 };
     }
 }
