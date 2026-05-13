@@ -1,6 +1,10 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyManager.BusinessLogic.Services;
+using MoneyManager.Common.DTOs.Dashboard;
+using MoneyManager.DTO;
 
 namespace MoneyManager.Application.Controllers
 {
@@ -14,7 +18,15 @@ namespace MoneyManager.Application.Controllers
             _service = service;
         }
 
-        
+        [Authorize]
+        [HttpGet("summary")]
+        public async Task<APIResponse<DashboardSummary>> GetSummary()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var response = await _service.GetDashboardSummary(userId);
+
+            return response;
+        }
         
     }
 }

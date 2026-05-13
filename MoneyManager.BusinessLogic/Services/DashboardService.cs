@@ -17,32 +17,31 @@ public class DashboardService
 
     public async Task<APIResponse<DashboardSummary>> GetDashboardSummary(string userId)
     {
-        var validateUserId = int.TryParse(userId, out int result);
-        if (validateUserId)
+        var isValidUserId = int.TryParse(userId, out int parsedUserId);
+        if (isValidUserId)
         {
-            var totalIncome = GetTotalIncome(result);
-            var totalExpense = GetTotalExpense(result);
+            var incomeTask = GetTotalIncome(parsedUserId);
+            var expenseTask = GetTotalExpense(parsedUserId);
+
+            var topSpentCategoryTask = GetTopSpentCategory(parsedUserId);
+            var budgetTask =  _service.GetAllBudget(parsedUserId);
+
+            await Task.WhenAll(incomeTask, expenseTask, topSpentCategoryTask, budgetTask);
+
+            var totalIncome = incomeTask.Result;
+            var totalExpense = expenseTask.Result;
+            var topSpentCategory = topSpentCategoryTask.Result;
+            var budgetResponse = budgetTask.Result;
+
             var balance = totalIncome - totalExpense;
-
-            var topSpentCategory = GetTopSpentCategory(result);
-            var budgetExceeded = 0;
-
-            var budgetResponse = _service.GetAllBudget(result).Result.Data;
-
-            foreach(var item in budgetResponse)
-            {
-                if(item.AmountRemaining < 0)
-                {
-                    budgetExceeded++;
-                }
-            }
+            var budgetExceeded = budgetResponse.Data.Count(x => x.AmountRemaining < 0);
 
             var response = new DashboardSummary()
             {
                 TotalIncome = totalIncome,
                 TotalExpense = totalExpense,
                 Balance = balance,
-                TopSpendingCategory = topSpentCategory,
+                TopSpendingCategory = topSpentCategory ?? "No Expenses",
                 BudgetExceeded = budgetExceeded
             };
 
@@ -52,21 +51,21 @@ public class DashboardService
         return new APIResponse<DashboardSummary>{Data = null, Message = "User Id not found", StatusCode = 404};
     }
 
-    private decimal GetTotalIncome(int userId)
+    private async Task<decimal> GetTotalIncome(int userId)
     {
-        var totalIncome = _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Income).Sum(x => x.Amount);
+        var totalIncome = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Income).SumAsync(x => x.Amount);
 
         return totalIncome;
     }
 
-    private decimal GetTotalExpense(int userId)
+    private async Task<decimal> GetTotalExpense(int userId)
     {
-        var totalExpense = _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Expense).Sum(x => x.Amount);
+        var totalExpense = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Expense).SumAsync(x => x.Amount);
 
         return totalExpense;
     }
 
-    private string GetTopSpentCategory(int userId)
+    private async Task<string> GetTopSpentCategory(int userId)
     {
         var topSpentCategory = _db.Transactions.AsNoTracking().Where(x => x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Expense).GroupBy(x=> x.Category.CategoryName).Select(g=> new
         {
