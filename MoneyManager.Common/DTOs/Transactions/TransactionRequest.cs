@@ -4,6 +4,7 @@ namespace MoneyManager.DTO
 {
     public class TransactionRequest
     {
+        public int UserId { get; set; }
         public int CategoryUID { get; set; }
         public int AccountUID { get; set; }
         public DateTime Date { get; set; }

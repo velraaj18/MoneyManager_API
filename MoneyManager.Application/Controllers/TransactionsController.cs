@@ -4,6 +4,8 @@ using MoneyManager.Models;
 using MoneyManager.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace MoneyManager.Controllers
 {
@@ -19,6 +21,7 @@ namespace MoneyManager.Controllers
         }
 
         [HttpGet("GetAllTransactions")]
+        [Authorize]
         public Task<APIResponse<List<TransactionResponse>>> GetAll(int userId)
         {
             var response = _service.GetAllTransactions(userId);
@@ -26,13 +29,18 @@ namespace MoneyManager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public Task<APIResponse<Transaction>> Post(TransactionRequest req)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            req.UserId = userId;
+
             var response = _service.PostTransaction(req);
             return response;
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public Task<APIResponse<Transaction>> Update(int id, TransactionRequest req)
         {
             var response = _service.UpdateTransaction(id, req);

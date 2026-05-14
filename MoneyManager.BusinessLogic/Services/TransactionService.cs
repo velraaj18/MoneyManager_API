@@ -48,6 +48,7 @@ namespace MoneyManager.Services
             // Create new transaction
             var transaction = new Transaction()
             {
+                UserId = req.UserId,
                 AccountUID = req.AccountUID,
                 CategoryUID = req.CategoryUID,
                 Amount = req.Amount,
@@ -112,11 +113,15 @@ namespace MoneyManager.Services
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
-            var summary = await query
-                .GroupBy(x => x.Category.CategoryName)
+            var summary = await query.GroupBy(x => new
+                {
+                    x.Category.CategoryName,
+                    x.Category.TransactionType
+                })
                 .Select(g => new TransactionCategorySummary
                 {
-                    CategoryName = g.Key,
+                    CategoryName = g.Key.CategoryName,
+                    TransactionTypeCode = g.Key.TransactionType,
                     TotalAmount = g.Sum(x => x.Amount)
                 })
                 .ToListAsync();

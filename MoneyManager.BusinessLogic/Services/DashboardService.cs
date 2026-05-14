@@ -2,17 +2,21 @@ using Microsoft.EntityFrameworkCore;
 using MoneyManager.Common.DTOs.Dashboard;
 using MoneyManager.Data;
 using MoneyManager.DTO;
+using MoneyManager.Services;
+using MoneyManager.Common.Enums;
 
 namespace MoneyManager.BusinessLogic.Services;
 
 public class DashboardService
 {
     private readonly AppDBContext _db;
-    private readonly BudgetService _service;
-    public DashboardService(AppDBContext db, BudgetService service)
+    private readonly BudgetService _budgetService;
+    private readonly TransactionService _transacationService;
+    public DashboardService(AppDBContext db, BudgetService budgetService, TransactionService transactionService)
     {
         _db = db;
-        _service = service;
+        _budgetService = budgetService;
+        _transacationService = transactionService;
     }
 
     public async Task<APIResponse<DashboardSummary>> GetDashboardSummary(string userId)
@@ -20,21 +24,16 @@ public class DashboardService
         var isValidUserId = int.TryParse(userId, out int parsedUserId);
         if (isValidUserId)
         {
-            var incomeTask = GetTotalIncome(parsedUserId);
-            var expenseTask = GetTotalExpense(parsedUserId);
+            var transactionSummary = (await _transacationService.GetByCategory(null, null)).Data;
+            var budgetResponse = (await _budgetService.GetAllBudget(parsedUserId)).Data;
 
-            var topSpentCategoryTask = GetTopSpentCategory(parsedUserId);
-            var budgetTask =  _service.GetAllBudget(parsedUserId);
+            var totalIncome = transactionSummary.Where(x => x.TransactionTypeCode == Common.Enums.TransactionTypeCode.Income).Select(x=> x.TotalAmount).FirstOrDefault();
+            var totalExpense = transactionSummary.Where(x => x.TransactionTypeCode == Common.Enums.TransactionTypeCode.Expense).Select(x=> x.TotalAmount).FirstOrDefault();
 
-            await Task.WhenAll(incomeTask, expenseTask, topSpentCategoryTask, budgetTask);
-
-            var totalIncome = incomeTask.Result;
-            var totalExpense = expenseTask.Result;
-            var topSpentCategory = topSpentCategoryTask.Result;
-            var budgetResponse = budgetTask.Result;
-
+            var topSpentCategory = transactionSummary.Where(x=> x.TransactionTypeCode == TransactionTypeCode.Expense).OrderByDescending(x => x.TotalAmount).Select(x=> x.CategoryName).FirstOrDefault();
+            
             var balance = totalIncome - totalExpense;
-            var budgetExceeded = budgetResponse.Data.Count(x => x.AmountRemaining < 0);
+            var budgetExceeded = budgetResponse.Count(x => x.AmountRemaining < 0);
 
             var response = new DashboardSummary()
             {
@@ -53,25 +52,25 @@ public class DashboardService
 
     private async Task<decimal> GetTotalIncome(int userId)
     {
-        var totalIncome = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Income).SumAsync(x => x.Amount);
+        var totalIncome = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Income).SumAsync(x => x.Amount);
 
         return totalIncome;
     }
 
     private async Task<decimal> GetTotalExpense(int userId)
     {
-        var totalExpense = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Expense).SumAsync(x => x.Amount);
+        var totalExpense = await _db.Transactions.AsNoTracking().Where(x=> x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).SumAsync(x => x.Amount);
 
         return totalExpense;
     }
 
     private async Task<string> GetTopSpentCategory(int userId)
     {
-        var topSpentCategory = _db.Transactions.AsNoTracking().Where(x => x.UserId == userId && x.Category.TransactionType == Common.Enums.TransactionTypeCode.Expense).GroupBy(x=> x.Category.CategoryName).Select(g=> new
+        var topSpentCategory = await _db.Transactions.AsNoTracking().Where(x => x.UserId == userId && x.Category.TransactionType == TransactionTypeCode.Expense).GroupBy(x=> x.Category.CategoryName).Select(g=> new
         {
             CategoryName = g.Key,
             TotalAmount = g.Sum(x => x.Amount)
-        }).OrderByDescending(x => x.TotalAmount).Select(x=> x.CategoryName).FirstOrDefault();
+        }).OrderByDescending(x => x.TotalAmount).Select(x=> x.CategoryName).FirstOrDefaultAsync();
 
         return topSpentCategory;
     }
