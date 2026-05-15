@@ -139,11 +139,10 @@ namespace MoneyManager.Services
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
             var summary = await query
-                .GroupBy(x => new { x.Account.AccountName, x.Category.CategoryName })
+                .GroupBy(x => new { x.Account.AccountName })
                 .Select(g => new TransactionAccountSummary
                 {
                     AccountName = g.Key.AccountName,
-                    CategoryName = g.Key.CategoryName,
                     TotalAmount = g.Sum(x => x.Amount)
                 })
                 .ToListAsync();
@@ -161,12 +160,12 @@ namespace MoneyManager.Services
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
             var summary = await query
-                .GroupBy(x => new { x.Date.Year, x.Date.Month, x.Category.CategoryName })
+                .GroupBy(x => new { x.Date.Year, x.Date.Month, x.Category.TransactionType })
                 .Select(g => new
                 {
                     g.Key.Year,
                     g.Key.Month,
-                    g.Key.CategoryName,
+                    g.Key.TransactionType,
                     Amount = g.Sum(x => x.Amount)
                 })
                 .OrderBy(x => x.Year)
@@ -177,7 +176,7 @@ namespace MoneyManager.Services
             {
                 Year = x.Year,
                 Month = new DateTime(x.Year, x.Month, 1).ToString("MMM"),
-                Category = x.CategoryName,
+                TransactionType = (int)x.TransactionType,
                 Amount = x.Amount
             }).ToList();
 

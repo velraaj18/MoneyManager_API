@@ -22,8 +22,9 @@ namespace MoneyManager.Controllers
 
         [HttpGet("GetAllTransactions")]
         [Authorize]
-        public Task<APIResponse<List<TransactionResponse>>> GetAll(int userId)
+        public Task<APIResponse<List<TransactionResponse>>> GetAll()
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);          
             var response = _service.GetAllTransactions(userId);
             return response;
         }

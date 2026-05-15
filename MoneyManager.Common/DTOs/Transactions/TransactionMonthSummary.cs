@@ -6,7 +6,7 @@ namespace MoneyManager.DTO.Transactions
     {
         public int Year { get; set; }
         public string Month { get; set; }
-        public string Category { get; set; }
+        public int TransactionType { get; set; }
         public decimal Amount { get; set; }
     }
 }
