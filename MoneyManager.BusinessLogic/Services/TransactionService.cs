@@ -27,7 +27,7 @@ namespace MoneyManager.Services
                 Category = t.Category.CategoryName,
                 AccountId = t.AccountUID,
                 Account = t.Account.AccountName,
-                TransactionType = t.Category.TransactionType.ToString()
+                TransactionTypeCode = t.Category.TransactionType
             }).ToListAsync();
 
             if (result.Count == 0)

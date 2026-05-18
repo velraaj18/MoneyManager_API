@@ -1,3 +1,5 @@
+using MoneyManager.Common.Enums;
+
 public class TransactionResponse
 {
     public int TransactionUID { get; set; }
@@ -8,5 +10,5 @@ public class TransactionResponse
     public string Category { get; set; }
     public int AccountId {get; set;}
     public string Account { get; set; }
-    public string TransactionType {get; set;}
+    public TransactionTypeCode TransactionTypeCode { get; set; }
 }
