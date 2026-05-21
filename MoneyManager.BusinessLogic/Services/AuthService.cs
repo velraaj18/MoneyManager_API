@@ -159,8 +159,8 @@ namespace MoneyManager.Services
                 Message = "Token refreshed successfully",
                 Data = new
                 {
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken
+                    token = accessToken,
+                    refreshToken = refreshToken
                 }
             };
         }

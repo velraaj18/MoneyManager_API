@@ -176,8 +176,9 @@ namespace MoneyManager.Services
             {
                 Year = x.Year,
                 Month = new DateTime(x.Year, x.Month, 1).ToString("MMM"),
-                TransactionType = (int)x.TransactionType,
-                Amount = x.Amount
+                TransactionType = x.TransactionType,
+                Amount = x.Amount,
+                MonthNumber = x.Month
             }).ToList();
 
             return new APIResponse<List<TransactionMonthSummary>>
