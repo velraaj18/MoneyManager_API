@@ -16,7 +16,7 @@ namespace MoneyManager.Models
         public int AccountUID { get; set; }
         [ForeignKey("User")]
         public int UserId {get; set;}
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
         public string Description { get; set; }
         [Precision(18, 2)]
         public decimal Amount { get; set; }

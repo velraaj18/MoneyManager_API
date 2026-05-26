@@ -109,7 +109,7 @@ namespace MoneyManager.Services
             return new APIResponse<Transaction> { StatusCode = 200, Message = "Transaction deleted successfully", Data = transaction };
         }
 
-        public async Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateTime? startDate, DateTime? endDate)
+        public async Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateOnly? startDate, DateOnly? endDate)
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
@@ -134,7 +134,7 @@ namespace MoneyManager.Services
             };
         }
 
-        public async Task<APIResponse<List<TransactionAccountSummary>>> GetByAccount(DateTime? startDate, DateTime? endDate)
+        public async Task<APIResponse<List<TransactionAccountSummary>>> GetByAccount(DateOnly? startDate, DateOnly? endDate)
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
@@ -155,7 +155,7 @@ namespace MoneyManager.Services
             };
         }
 
-        public async Task<APIResponse<List<TransactionMonthSummary>>> GetByMonth(DateTime? startDate, DateTime? endDate)
+        public async Task<APIResponse<List<TransactionMonthSummary>>> GetByMonth(DateOnly? startDate, DateOnly? endDate)
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
@@ -192,8 +192,8 @@ namespace MoneyManager.Services
         // Date filter for all summary query
         private IQueryable<Transaction> ApplyDateFilter(
         IQueryable<Transaction> query,
-        DateTime? startDate,
-        DateTime? endDate)
+        DateOnly? startDate,
+        DateOnly? endDate)
         {
             if (startDate.HasValue)
                 query = query.Where(x => x.Date >= startDate.Value);

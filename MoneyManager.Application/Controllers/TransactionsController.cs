@@ -56,19 +56,19 @@ namespace MoneyManager.Controllers
         }
 
         [HttpGet("Category-Summary")]
-        public Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateTime? startDate, DateTime? endDate)
+        public Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateOnly? startDate, DateOnly? endDate)
         {
             return _service.GetByCategory(startDate, endDate);
         }
 
         [HttpGet("Account-Summary")]
-        public Task<APIResponse<List<TransactionAccountSummary>>> GetByAccount(DateTime? startDate, DateTime? endDate)
+        public Task<APIResponse<List<TransactionAccountSummary>>> GetByAccount(DateOnly? startDate, DateOnly? endDate)
         {
             return _service.GetByAccount(startDate, endDate);
         }
 
         [HttpGet("Month-Summary")]
-        public Task<APIResponse<List<TransactionMonthSummary>>> GetByMonth(DateTime? startDate, DateTime? endDate)
+        public Task<APIResponse<List<TransactionMonthSummary>>> GetByMonth(DateOnly? startDate, DateOnly? endDate)
         {
             return _service.GetByMonth(startDate, endDate);
         }
