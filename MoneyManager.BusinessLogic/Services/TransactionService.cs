@@ -109,9 +109,9 @@ namespace MoneyManager.Services
             return new APIResponse<Transaction> { StatusCode = 200, Message = "Transaction deleted successfully", Data = transaction };
         }
 
-        public async Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateOnly? startDate, DateOnly? endDate)
+        public async Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(int userId, DateOnly? startDate, DateOnly? endDate)
         {
-            var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
+            var query = ApplyDateFilter(_db.Transactions.Where(x=> x.UserId == userId), startDate, endDate);
 
             var summary = await query.GroupBy(x => new
                 {

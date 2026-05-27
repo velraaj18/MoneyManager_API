@@ -16,9 +16,9 @@ namespace MoneyManager.Services
             _db = db;
         }
 
-        public async Task<APIResponse<List<Category>>> GetAllCategories()
+        public async Task<APIResponse<List<Category>>> GetAllCategories(int userId)
         {
-            var result = await _db.Categories.ToListAsync();
+            var result = await _db.Categories.Where(x=> x.UserId == userId).ToListAsync();
 
             if (result == null)
                 return new APIResponse<List<Category>> { Data = null, Message = "No Categories found", StatusCode = 200 };
@@ -34,6 +34,7 @@ namespace MoneyManager.Services
             var category = new Category()
             {
                 CategoryName = req.CategoryName,
+                UserId = req.UserId,
                 TransactionType = req.TransactionType,
                 Description = req.Description
             };

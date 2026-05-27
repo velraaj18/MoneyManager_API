@@ -24,7 +24,7 @@ public class DashboardService
         var isValidUserId = int.TryParse(userId, out int parsedUserId);
         if (isValidUserId)
         {
-            var transactionSummary = (await _transacationService.GetByCategory(null, null)).Data;
+            var transactionSummary = (await _transacationService.GetByCategory(parsedUserId, null, null)).Data;
             var budgetResponse = (await _budgetService.GetAllBudget(parsedUserId)).Data;
 
             var totalIncome = transactionSummary.Where(x => x.TransactionTypeCode == Common.Enums.TransactionTypeCode.Income).Select(x=> x.TotalAmount).FirstOrDefault();

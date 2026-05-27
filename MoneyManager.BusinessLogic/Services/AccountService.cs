@@ -15,9 +15,9 @@ namespace MoneyManager.Services
             _db = db;
         }
 
-        public async Task<APIResponse<List<Account>>> GetAllAccounts()
+        public async Task<APIResponse<List<Account>>> GetAllAccounts(int userId)
         {
-            var result = await _db.Accounts.ToListAsync();
+            var result = await _db.Accounts.Where(x=> x.UserId == userId).ToListAsync();
 
             if (result == null)
             {
@@ -37,6 +37,7 @@ namespace MoneyManager.Services
             var account = new Account()
             {
                 AccountName = req.AccountName,
+                UserId = req.UserId,
                 Description = req.Description
             };
 

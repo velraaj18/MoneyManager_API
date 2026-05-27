@@ -41,6 +41,9 @@ namespace MoneyManager.Application.Controllers
         [Authorize]
         public Task<APIResponse<Budget>> AddBudget(BudgetRequest request)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            request.UserId = userId;
+            
             var response = _service.CreateBudget(request);
             return response;
         }

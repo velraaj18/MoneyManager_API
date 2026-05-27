@@ -58,7 +58,9 @@ namespace MoneyManager.Controllers
         [HttpGet("Category-Summary")]
         public Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(DateOnly? startDate, DateOnly? endDate)
         {
-            return _service.GetByCategory(startDate, endDate);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            return _service.GetByCategory(userId, startDate, endDate);
         }
 
         [HttpGet("Account-Summary")]
