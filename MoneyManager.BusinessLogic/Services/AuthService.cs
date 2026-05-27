@@ -110,7 +110,7 @@ namespace MoneyManager.Services
             }
 
             // Fetch the refresh token from the DB
-            var storedToken = _dbContext.RefreshTokens.Where(x => x.Token == dto.Token).Include(y => y.User).FirstOrDefault();
+            var storedToken = _dbContext.RefreshTokens.Where(x => x.Token == dto.RefreshToken).Include(y => y.User).FirstOrDefault();
             if (storedToken == null)
             {
                 return new APIResponse<dynamic> { StatusCode = 401, Message = "No Refresh Token Found", Data = null };

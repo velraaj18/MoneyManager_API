@@ -4,6 +4,6 @@ namespace MoneyManager.DTO
 {
     public class RefreshTokenReq
     {
-        public string Token {get; set;}
+        public string RefreshToken {get; set;}
     }
 }

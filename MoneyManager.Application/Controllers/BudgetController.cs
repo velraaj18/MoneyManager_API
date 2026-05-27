@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyManager.BusinessLogic.Services;
@@ -18,20 +20,25 @@ namespace MoneyManager.Application.Controllers
         }
 
         [HttpGet]
-        public Task<APIResponse<List<BudgetResponse>>> GetAllBudget(int userId)
+        [Authorize]
+        public Task<APIResponse<List<BudgetResponse>>> GetAllBudget()
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var response = _service.GetAllBudget(userId);
             return response;
         }
 
         [HttpGet]
-        public Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int userId, int? categoryId, int? month, int? year)
+        [Authorize]
+        public Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int? categoryId, int? month, int? year)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var response = _service.GetBudgetByCategory(userId: userId, categoryId: categoryId, month: month, year: year);
             return response;
         }
 
         [HttpPost("AddBudget")]
+        [Authorize]
         public Task<APIResponse<Budget>> AddBudget(BudgetRequest request)
         {
             var response = _service.CreateBudget(request);
@@ -39,6 +46,7 @@ namespace MoneyManager.Application.Controllers
         }
 
         [HttpPut("UpdateBudget")]
+        [Authorize]
         public Task<APIResponse<Budget>> Update(BudgetRequest request)
         {
             var response = _service.UpdateBudget(request);

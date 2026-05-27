@@ -8,12 +8,14 @@ namespace MoneyManager.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AccountUID {get; set;}
+        public int AccountUID { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         [Required]
         [StringLength(25)]
-        public string AccountName {get; set;}
+        public string AccountName { get; set; }
 
-        public string Description {get; set;}
+        public string Description { get; set; }
     }
 }

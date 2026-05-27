@@ -36,7 +36,7 @@ namespace MoneyManager.Controllers
             return result;
         }
 
-        [HttpPost("RefreshToken")]
+        [HttpPost("refreshToken")]
         public async Task<APIResponse<dynamic>> RefreshToken(RefreshTokenReq request)
         {
             var result = await _authServie.RefreshToken(request);

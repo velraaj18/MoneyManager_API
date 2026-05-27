@@ -9,14 +9,16 @@ namespace MoneyManager.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CategoryUID {get; set;}
+        public int CategoryUID { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         [Required]
         [StringLength(25)]
-        public string CategoryName {get; set;}
+        public string CategoryName { get; set; }
 
         public TransactionTypeCode TransactionType { get; set; }
 
-        public string Description {get; set;}
+        public string Description { get; set; }
     }
 }
