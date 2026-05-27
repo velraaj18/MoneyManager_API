@@ -23,9 +23,9 @@ namespace MoneyManager.Services
                 Date = t.Date,
                 Description = t.Description,
                 Amount = t.Amount,
-                CategoryId = t.CategoryUID,
+                CategoryId = t.CategoryId,
                 Category = t.Category.CategoryName,
-                AccountId = t.AccountUID,
+                AccountId = t.AccountId,
                 Account = t.Account.AccountName,
                 TransactionTypeCode = t.Category.TransactionType
             }).ToListAsync();
@@ -49,8 +49,8 @@ namespace MoneyManager.Services
             var transaction = new Transaction()
             {
                 UserId = req.UserId,
-                AccountUID = req.AccountUID,
-                CategoryUID = req.CategoryUID,
+                AccountId = req.AccountId,
+                CategoryId = req.CategoryId,
                 Amount = req.Amount,
                 Date = req.Date,
                 Description = req.Description
@@ -81,8 +81,8 @@ namespace MoneyManager.Services
             }
 
             transaction.Amount = req.Amount;
-            transaction.CategoryUID = req.CategoryUID;
-            transaction.AccountUID = req.AccountUID;
+            transaction.CategoryId = req.CategoryId;
+            transaction.AccountId = req.AccountId;
             transaction.Date = req.Date;
             transaction.Description = req.Description;
 

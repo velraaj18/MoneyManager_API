@@ -30,7 +30,7 @@ public class BudgetService
         {
             var totalSpent = transactions
                 .Where(x =>
-                    x.CategoryUID == item.CategoryId &&
+                    x.CategoryId == item.CategoryId &&
                     x.Date.Month == item.Month &&
                     x.Date.Year == item.Year)
                 .Sum(x => x.Amount);
@@ -76,7 +76,7 @@ public class BudgetService
         {
             var totalSpent = transactions
                 .Where(x =>
-                    x.CategoryUID == item.CategoryId &&
+                    x.CategoryId == item.CategoryId &&
                     x.Date.Month == item.Month &&
                     x.Date.Year == item.Year)
                 .Sum(x => x.Amount);
