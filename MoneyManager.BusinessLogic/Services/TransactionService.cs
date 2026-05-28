@@ -32,7 +32,7 @@ namespace MoneyManager.Services
 
             if (result.Count == 0)
             {
-                return new APIResponse<List<TransactionResponse>> { Data = null, Message = "No Transaction found", StatusCode = 200 };
+                return new APIResponse<List<TransactionResponse>> { Data = [], Message = "No Transaction found", StatusCode = 200 };
             }
 
             return new APIResponse<List<TransactionResponse>> { Data = result, Message = "Transactions fetched successfully", StatusCode = 200 };

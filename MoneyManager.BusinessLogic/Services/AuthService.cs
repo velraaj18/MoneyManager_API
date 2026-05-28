@@ -104,13 +104,13 @@ namespace MoneyManager.Services
         // So when user asks for refresh token and it is not expired or revoked, we provide them with new access token and refresh token
         public async Task<APIResponse<dynamic>> RefreshToken(RefreshTokenReq dto)
         {
-            if (dto == null)
+            if (dto == null || string.IsNullOrEmpty(dto.RefreshToken))
             {
                 return new APIResponse<dynamic> { StatusCode = 400, Message = "You must provide the refresh token", Data = null };
             }
 
             // Fetch the refresh token from the DB
-            var storedToken = _dbContext.RefreshTokens.Where(x => x.Token == dto.RefreshToken).Include(y => y.User).FirstOrDefault();
+            var storedToken = await _dbContext.RefreshTokens.Where(x => x.Token == dto.RefreshToken).Include(y => y.User).FirstOrDefaultAsync();
             if (storedToken == null)
             {
                 return new APIResponse<dynamic> { StatusCode = 401, Message = "No Refresh Token Found", Data = null };
