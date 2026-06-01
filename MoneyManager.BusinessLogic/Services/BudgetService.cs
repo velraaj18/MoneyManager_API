@@ -37,6 +37,8 @@ public class BudgetService
 
             budgetResponses.Add(new BudgetResponse()
             {
+                BudgetUID = item.BudgetUID,
+                CategoryId = item.CategoryId,
                 CategoryName = item.Category?.CategoryName,
                 SpendLimit = item.SpendLimit,
                 AmountRemaining = item.SpendLimit - totalSpent,
@@ -83,6 +85,8 @@ public class BudgetService
 
             response.Add(new BudgetResponse()
             {
+                BudgetUID = item.BudgetUID,
+                CategoryId = item.CategoryId,
                 CategoryName = item.Category?.CategoryName,
                 SpendLimit = item.SpendLimit,
                 AmountRemaining = item.SpendLimit - totalSpent,

@@ -19,7 +19,7 @@ namespace MoneyManager.Application.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllBudget")]
         [Authorize]
         public Task<APIResponse<List<BudgetResponse>>> GetAllBudget()
         {
@@ -28,7 +28,7 @@ namespace MoneyManager.Application.Controllers
             return response;
         }
 
-        [HttpGet]
+        [HttpGet("GetBudgetByCategory")]
         [Authorize]
         public Task<APIResponse<List<BudgetResponse>>> GetBudgetByCategory(int? categoryId, int? month, int? year)
         {
