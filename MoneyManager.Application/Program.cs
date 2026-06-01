@@ -31,7 +31,9 @@ builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<PasswordHasher<User>>();
 
 // Register DB context
-builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Auto mapper profiles
 // Any class that inherits from AutoMapper's "Profile" class it will be registered.

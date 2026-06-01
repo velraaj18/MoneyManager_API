@@ -111,9 +111,12 @@ namespace MoneyManager.Services
 
         public async Task<APIResponse<List<TransactionCategorySummary>>> GetByCategory(int userId, DateOnly? startDate, DateOnly? endDate)
         {
-            var query = ApplyDateFilter(_db.Transactions.Where(x=> x.UserId == userId), startDate, endDate);
+            var query = ApplyDateFilter(_db.Transactions.Where(x => x.UserId == userId), startDate, endDate);
 
-            var summary = await query.GroupBy(x => new
+            var transactions = await query.Include(x => x.Category).ToListAsync();
+
+            var summary = transactions
+                .GroupBy(x => new
                 {
                     x.Category.CategoryName,
                     x.Category.TransactionType
@@ -124,7 +127,7 @@ namespace MoneyManager.Services
                     TransactionTypeCode = g.Key.TransactionType,
                     TotalAmount = g.Sum(x => x.Amount)
                 })
-                .ToListAsync();
+                .ToList();
 
             return new APIResponse<List<TransactionCategorySummary>>
             {
@@ -138,14 +141,16 @@ namespace MoneyManager.Services
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
-            var summary = await query
-                .GroupBy(x => new { x.Account.AccountName })
+            var transactions = await query.Include(x => x.Account).ToListAsync();
+
+            var summary = transactions
+                .GroupBy(x => x.Account.AccountName)
                 .Select(g => new TransactionAccountSummary
                 {
-                    AccountName = g.Key.AccountName,
+                    AccountName = g.Key,
                     TotalAmount = g.Sum(x => x.Amount)
                 })
-                .ToListAsync();
+                .ToList();
 
             return new APIResponse<List<TransactionAccountSummary>>
             {
@@ -159,18 +164,20 @@ namespace MoneyManager.Services
         {
             var query = ApplyDateFilter(_db.Transactions, startDate, endDate);
 
-            var summary = await query
-                .GroupBy(x => new { x.Date.Year, x.Date.Month, x.Category.TransactionType })
-                .Select(g => new
-                {
-                    g.Key.Year,
-                    g.Key.Month,
-                    g.Key.TransactionType,
-                    Amount = g.Sum(x => x.Amount)
-                })
-                .OrderBy(x => x.Year)
-                .ThenBy(x => x.Month)
-                .ToListAsync();
+            var transactions = await query.Include(x => x.Category).ToListAsync();
+
+            var summary = transactions.GroupBy(x => new
+            {
+                x.Date.Year,
+                x.Date.Month,
+                x.Category.TransactionType
+            }).Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                g.Key.TransactionType,
+                Amount = g.Sum(x => x.Amount)
+            }).OrderBy(x => x.Year).ThenBy(x => x.Month).ToList();
 
             var result = summary.Select(x => new TransactionMonthSummary
             {
