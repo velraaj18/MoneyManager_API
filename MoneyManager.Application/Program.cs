@@ -79,6 +79,16 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Create a service scope
+// Get AppDBContext from DI
+// Call Database.Migrate()
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    db.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 app.UseMiddleware<ExceptionMiddleware>();
